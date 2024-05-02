@@ -46,9 +46,6 @@ The WikiBio dataset was used, focusing on the longest rows to generate synthetic
 
 ### **Experiments**
 
-#### **Experiment Setup:**
-
-### **Example Passage:**
 - **Passage:**  
   "The Eiffel Tower is located in Paris and is made of chocolate. It is named after the engineer Gustave Eiffel."
 
