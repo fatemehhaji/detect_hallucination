@@ -18,8 +18,9 @@ Stay tuned as we dive into the fascinating world of SelfCheckGPT! 🕵️‍♀�
 1. **Hallucination Challenge:** Hallucinations are a significant issue for LLMs used in various applications, as they can generate false information.
 2. **Zero-Resource Approach:** This method detects hallucinations without requiring extra data or model adjustments.
 3. **Real-World Applicability:** It's designed to be efficient and integrate easily with existing LLMs.
-![Motivation Image](/tweet.png/)
-
+<p align="right">
+    <img src="tweet.png" alt="Motivation Image" width="400"/>
+</p>
 
 ## **Research Objective**
 The goal is to create a system that:
@@ -39,38 +40,37 @@ SelfCheckGPT uses several statistical approaches for checking consistency:
 5. **Prompting:** Queries the LLM to assess whether a given sentence in the response is supported by the sampled responses through Yes/No questions.
 
 ## **Experiments and Results**
-- **Dataset:** The longest rows of the WikiBio dataset were used to generate synthetic Wikipedia articles using GPT-3.
-- **Experiments:**
-  - **Index 4:**
-    - **MQAG:** (2 sentences, 5 samples, 3 questions): 2m 12s, [0.2255, 0.4392]
-    - **BERTScore:** (2 sentences, 5 samples): 11.5s, [0.6200, 0.7297]
-    - **n-gram:** (2 sentences, 5 samples): 0.8s, {'sent_level': {'avg_neg_logprob': [4.7555, 4.9696], 'max_neg_logprob': [7.0246, 7.0246]}}
-    - **NLI:** (2 sentences, 5 samples): 4.4s, [0.5992, 0.9251]
-    - **Prompt:** (2 sentences, 5 samples): 1m 55s, [0.2, 0.2]
 
-  - **Example Passage:**
-    - **Passage:** "The Eiffel Tower is located in Paris and is made of chocolate. It is named after the engineer Gustave Eiffel."
-    - **Samples:**
-      1. "The Eiffel Tower is in Paris and made of iron."
-      2. "The Eiffel Tower is a famous landmark in France."
-      3. "The Eiffel Tower was constructed in 188."
+### **Dataset**
+The WikiBio dataset was used, focusing on the longest rows to generate synthetic Wikipedia articles using GPT-3.
 
-    - **Results:**
-      - **MQAG:** (2 sentences, 3 samples, 2 questions): 50.5s, [0.8661, 0.5883]
-      - **BERTScore:** (2 sentences, 3 samples): 6s, [0.3252, 0.7693]
-      - **n-gram:** (2 sentences, 3 samples): 0.5s, {'sent_level': {'avg_neg_logprob': [2.8863, 3.2165], 'max_neg_logprob': [3.9318, 3.9318]}}
-      - **NLI:** (2 sentences, 3 samples): 1s, [0.9987, 0.2122]
-      - **Prompt:** (2 sentences, 3 samples): 30.8s, [1.0, 0.0]
+### **Experiments**
 
-- **Observations:**
-  - **MQAG:** Effective at detecting non-factual information through multi-question assessment.
-  - **BERTScore:** Struggles if the sentence is not present in the sampled passages.
-  - **n-gram:** Effective for analyzing the likelihood of factual information.
-  - **NLI:** Identifies contradictions even without explicit facts.
-  - **Prompt:** Assesses factuality effectively, but depends on the LLM's knowledge.
+#### **Experiment Setup:**
+
+### **Example Passage:**
+- **Passage:**  
+  "The Eiffel Tower is located in Paris and is made of chocolate. It is named after the engineer Gustave Eiffel."
+
+- **Sampled Responses:**
+  1. "The Eiffel Tower is in Paris and made of iron."
+  2. "The Eiffel Tower is a famous landmark in France."
+  3. "The Eiffel Tower was constructed in 188."
+
+### **Results Summary**
+- **MQAG:** Effective at detecting factual inaccuracies by asking questions across multiple responses.
+- **BERTScore:** Effective at evaluating factual sentences but struggles if the sentence isn't in the sampled responses.
+- **n-gram:** Useful for analyzing the likelihood of factual information based on word usage.
+- **NLI:** Identifies contradictions in the text even without explicit facts.
+- **Prompt:** Assesses factuality effectively by directly querying an LLM, but results depend on the model's knowledge.
 
 ## **Conclusion**
-SelfCheckGPT is a highly effective, zero-resource hallucination detection method for Large Language Models, suitable for various applications without requiring internal model data or external databases.
+SelfCheckGPT is a highly effective, zero-resource hallucination detection method for Large Language Models, suitable for various applications without requiring internal model data or external databases. However, its performance can vary based on the method used, with each method having its own strengths and weaknesses as outlined in the experiments.
+
+
+
+
+
 
 ---
 
