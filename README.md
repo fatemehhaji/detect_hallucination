@@ -9,13 +9,17 @@ In this blog, we'll explore SelfCheckGPT - a tool that can automatically detect 
 It does this without needing any special access to the model's internal workings or external data sources.
 
 We'll explain in simple terms how SelfCheckGPT works, the experiments we did to test it, and the results they got. Our goal is to help everyone understand the key ideas from the research paper in a clear and accessible way.
-By the end, you'll know more about an important technique for making sure AI language models don't spread misinformation, even by accident. Stay tuned as we dive into the fascinating world of SelfCheckGPT!
+By the end, you'll know more about an important technique for making sure AI language models don't spread misinformation, even by accident. 
+
+Stay tuned as we dive into the fascinating world of SelfCheckGPT! 🕵️‍♀️
 
 
 ## **Motivation**
 1. **Hallucination Challenge:** Hallucinations are a significant issue for LLMs used in various applications, as they can generate false information.
 2. **Zero-Resource Approach:** This method detects hallucinations without requiring extra data or model adjustments.
 3. **Real-World Applicability:** It's designed to be efficient and integrate easily with existing LLMs.
+![Motivation Image](/tweet.png/)
+
 
 ## **Research Objective**
 The goal is to create a system that:
