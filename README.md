@@ -35,7 +35,7 @@ The study "SELFCHECKGPT: Zero-Resource Black-Box Hallucination Detection for Gen
 ### **Methodology**
 SelfCheckGPT uses several statistical approaches for checking consistency:
 
-> # BERTScore: A Simple Explanation
+> # 1) BERTScore: A Simple Explanation
 > 
 > A metric designed to measure the similarity between sentences in a generated response and those found in sampled reference responses. It's particularly useful for evaluating the quality of generated text by comparing it to reference samples.
 > 
@@ -62,7 +62,7 @@ SelfCheckGPT uses several statistical approaches for checking consistency:
 
 ---
 
-> # Question-Answering (QA): A Simple Explanation
+> # 2) Question-Answering (QA): A Simple Explanation
 >
 > Evaluates consistency by generating multiple-choice questions based on the generated response and assessing how many questions have consistent answers across samples.
 >
@@ -98,49 +98,58 @@ SelfCheckGPT uses several statistical approaches for checking consistency:
 
 ---
 
-> **n-gram:**  
->   Uses n-gram models trained on sampled responses to estimate the likelihood of each token in the generated response.
-> 
-> **Main Response:**  
-> "The Eiffel Tower is located in Berlin and is made of chocolate."
+> # 3) n-gram: A Simple Explanation
+>
+> Uses n-gram models trained on sampled responses to estimate the likelihood of each token in the generated response.
+>
+> **Main Response:** "The Eiffel Tower is located in Berlin and is made of chocolate."
 >
 > **Sampled Responses:**
-> - "The Eiffel Tower is in Paris and made of iron."
-> - "The Eiffel Tower is a famous landmark in France."
-> - "The Eiffel Tower was constructed in 1889."
+>
+> - The Eiffel Tower is in Paris and made of iron.
+> - The Eiffel Tower is a famous landmark in France.
+> - The Eiffel Tower was constructed in 1889.
 >
 > **Method:**
+>
 > - Train an n-gram model on the sampled responses.
 > - Assess the main response sentence by sentence using the n-gram model.
 >
 > **Assessment:**
+>
 > - "The Eiffel Tower is located in Berlin": Low probability, as the sampled responses indicate that the Eiffel Tower is in Paris.
 > - "and is made of chocolate": Low probability, as the sampled responses indicate that the Eiffel Tower is made of iron.
 >
-> **Conclusion:**
+> **How to Interpret the Scores**
+>
 > - High negative log probabilities suggest potential hallucinations.
 > - Sentences that contradict the sampled responses are flagged.
+
 ---
 
-> **Natural Language Inference (NLI):**  
+> # 4) Natural Language Inference (NLI): A Simple Explanation
+>  
 > Determines whether sampled responses contradict the generated response using Natural Language Inference models.
 > 
->  **Method:**
-> - Assess if a sentence from the Main Response contradicts information in sampled responses to detect hallucinations.
+> **Method:**
+> 
 > - Input: Concatenation of a sampled response (premise) and the assessed sentence of the Main Response (hypothesis).
 > - Contradiction Probability: Calculated using logits for 'entailment' and 'contradiction' classes.
-
+> 
 > **SelfCheckGPT with NLI Score:**
+> 
 > - Calculate the average of contradiction probabilities across all sampled passages.
 > - Higher score indicates a higher likelihood of hallucination.
 
+
 ---
 
-> **Prompting:**  
+> # 5) Prompting: A Simple Explanation
+>
 > Queries the LLM to assess whether a given sentence in the response is supported by the sampled responses through Yes/No questions.
-> 
+>
 > **Prompt Template:**
-> 
+>
 > ```
 > Sentence: {}
 > Context: {}
@@ -158,7 +167,6 @@ import torch
 import spacy
 from datasets import load_dataset
 
-# Load dataset and Spacy model
 dataset = load_dataset("potsawee/wiki_bio_gpt3_hallucination")
 nlp = spacy.load("en_core_web_sm")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -169,7 +177,6 @@ sample1 = "The Eiffel Tower, recognized globally, dominates the Parisian skyline
 sample2 = "The Eiffel Tower, an iconic structure, stands as a testament to France's architectural advancement, erroneously believed to be solely designed by Gustave Eiffel."
 sample3 = "Inaugurated in 1889 for the World's Fair, the Eiffel Tower's creation marked a pivotal moment in engineering history, despite Gustave Eiffel's initial reservations."
 
-# Load SelfCheckGPT models and tokenize sentences
 from selfcheckgpt.modeling_selfcheck import SelfCheckMQAG, SelfCheckBERTScore, SelfCheckNgram, SelfCheckNLI, SelfCheckLLMPrompt
 
 selfcheck_mqag = SelfCheckMQAG(device=device)
@@ -190,7 +197,6 @@ ngram_scores = selfcheck_ngram.predict(sentences, passage, samples[:3])
 nli_scores = selfcheck_nli.predict(sentences, samples[:3])
 prompt_scores = selfcheck_prompt.predict(sentences, samples[:3], verbose=True)
 
-# Print results
 print(mqag_scores)
 print(bertscore_scores)
 print(ngram_scores)
@@ -204,17 +210,8 @@ print(prompt_scores)
 ### **Dataset**
 The WikiBio dataset was used, focusing on the longest rows to generate synthetic Wikipedia articles using GPT-3.
 
-### **Experiments**
+### **Experiments Observation**
 
-- **Passage:**  
-  "The Eiffel Tower is located in Paris and is made of chocolate. It is named after the engineer Gustave Eiffel."
-
-- **Sampled Responses:**
-  1. "The Eiffel Tower is in Paris and made of iron."
-  2. "The Eiffel Tower is a famous landmark in France."
-  3. "The Eiffel Tower was constructed in 188."
-
-### **Results Summary**
 - **MQAG:** Effective at detecting factual inaccuracies by asking questions across multiple responses.
 - **BERTScore:** Effective at evaluating factual sentences but struggles if the sentence isn't in the sampled responses.
 - **n-gram:** Useful for analyzing the likelihood of factual information based on word usage.
