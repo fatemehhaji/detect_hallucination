@@ -83,7 +83,7 @@ SelfCheckGPT uses several statistical approaches for checking consistency:
 >   - [ ] US 
 >   - [x] Germany 
 >   - [ ] Italy
-
+>
 > 3. **Q3:** For what is Albert Einstein known?
 >   - [x] Theory of relativity 
 >   - [ ] Quantum mechanics 
