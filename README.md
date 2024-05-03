@@ -123,6 +123,15 @@ SelfCheckGPT uses several statistical approaches for checking consistency:
 
 > **Prompting:**  
 > Queries the LLM to assess whether a given sentence in the response is supported by the sampled responses through Yes/No questions.
+> 
+> **Prompt Template:**
+> 
+> ```
+> Sentence: {}
+> Context: {}
+> Is the sentence supported by the context above?
+> Answer Yes or No:
+> ```
 
 
 ## **Demo Code for SelfCheckGPT Paper**
