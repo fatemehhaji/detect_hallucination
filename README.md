@@ -35,52 +35,67 @@ The study "SELFCHECKGPT: Zero-Resource Black-Box Hallucination Detection for Gen
 ### **Methodology**
 SelfCheckGPT uses several statistical approaches for checking consistency:
 
-> **BERTScore**:
+> # BERTScore: A Simple Explanation
 > 
-> A metric designed to measure the similarity between sentences in a generated response and those found in sampled responses. It's particularly useful for evaluating the quality of generated text by comparing it to reference samples.
+> A metric designed to measure the similarity between sentences in a generated response and those found in sampled reference responses. It's particularly useful for evaluating the quality of generated text by comparing it to reference samples.
 > 
 > **How to Calculate BERTScore**
-> 1. **Calculate Pairwise Scores:**  
->    For each sentence \( r_i \) in the generated response, compute the BERTScore between \( r_i \) and every sentence \( s_k^n \) in other sample responses \( n \).
 > 
-> 2. **Identify the Most Similar Sentence:**  
->    Find the sentence in the sample responses that has the highest BERTScore with \( r_i \). This sentence is the most similar to the given sentence \( r_i \).
+> 1. **Calculate Pairwise Scores:**
+> For each sentence in the generated response, compute the BERTScore between this sentence and every sentence in other sample responses.
 > 
-> 3. **Average the Maximum Scores:**  
->    For each sentence in the response, calculate the average of the maximum BERTScores obtained across all sentences. This average score is denoted as `SBERT(i)`.
+> 3. **Identify the Most Similar Sentence:**
+> Find the sentence in the sample responses that has the highest BERTScore with the main sentence we want to assess. This sentence is the most similar to the given sentence.
 > 
-> ### **How to Interpret the Scores**
-> - **Low `SBERT(i)`**:  
->   Indicates that the sentence likely contains factual information, as it appears in multiple drawn samples.
-> - **High `SBERT(i)`**:  
->   Suggests that the sentence might be hallucinated or contain uncommon information, as it is found in fewer samples.
+> 3. **Average the Maximum Scores:**
+> For each sentence in the response, calculate the average of the maximum BERTScores obtained across all sentences. This average score is denoted as **S<sub>BERT</sub> (i)**.
+> 
+> **How to Interpret the Scores**
+> 
+> - Low S<sub>BERT</sub> (i):
+> Indicates that the sentence i likely contains factual information, as it appears in multiple drawn samples.
+> 
+> - High S<sub>BERT</sub> (i):
+> Suggests that the sentence i might be hallucinated or contain uncommon information, as it is found in fewer samples.
 > 
 > This way, we can gauge the similarity of each sentence in the generated response to the sampled responses, which helps identify how similar or distinct the generated sentences are.
 
 ---
 
-> **Question-Answering (QA):**  
->   Evaluates consistency by generating multiple-choice questions based on the generated response and assessing how many questions have consistent answers across samples.
+> # Question-Answering (QA): A Simple Explanation
 >
-> **Main Response:**  
-> "Albert Einstein was born in 1879 in Germany. He is known for his theory of relativity and won the Nobel Prize in Physics in 1921."
+> Evaluates consistency by generating multiple-choice questions based on the generated response and assessing how many questions have consistent answers across samples.
+>
+> **Main Response:** "Albert Einstein was born in 1879 in Germany. He is known for his theory of relativity and won the Nobel Prize in Physics in 1921."
+>
 > **Generated Questions:**
-> 1. **Q1:** When was Albert Einstein born?  
->    Options: A) 1879, B) 1885, C) 1890, D) 1900  
->    **Correct Answer:** A
 >
-> 2. **Q2:** Where was Albert Einstein born?  
->    Options: A) Iran, B) US, C) Germany, D) Italy  
->    **Correct Answer:** C
+> 1. **Q1:** When was Albert Einstein born?
+> 
+>   - [x] 1879 
+>   - [ ] 1885 
+>   - [ ] 1890 
+>   - [ ] 1900
 >
-> 3. **Q3:** For what is Albert Einstein known?  
->    Options: A) Theory of relativity, B) Quantum mechanics, C) Evolution theory, D) Thermodynamics  
->    **Correct Answer:** A
->    
+> 3. **Q2:** Where was Albert Einstein born?
+>   
+>   - [ ] Iran 
+>   - [ ] US 
+>   - [x] Germany 
+>   - [ ] Italy
+
+> 3. **Q3:** For what is Albert Einstein known?
+>   - [x] Theory of relativity 
+>   - [ ] Quantum mechanics 
+>   - [ ] Evolution theory 
+>   - [ ] Thermodynamics
+>
 > **Independent Answering System:**
+>
 > - Uses other sampled responses as context.
 > - Attempts to answer generated questions based on sample responses.
 > - Measures consistency by comparing the system's answers to the correct answers based on the main response.
+
 ---
 
 > **n-gram:**  
