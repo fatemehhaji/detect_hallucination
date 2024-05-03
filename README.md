@@ -224,7 +224,14 @@ The table below summarizes the results of the 5 variants of scores used in the S
 
 ![Results](result.png)
 
-The results demonstrate the effectiveness of SelfCheckGPT in hallucination detection for large language models. SelfCheckGPT outperforms grey-box approaches, with the Prompt variant achieving the highest performance, considerably outperforming GPT-3's output probabilities and other grey-box and black-box methods. Even other SelfCheckGPT variants, such as BERTScore, QA, and n-gram, outperform the grey-box approaches in most setups. Notably, the computationally inexpensive SelfCheckGPT with unigram (max) works well across different setups, suggesting that if a token appears infrequently within the generated samples, it is likely non-factual. The NLI-based method also performs competitively, providing a good trade-off between performance and computation. Overall, the results demonstrate the effectiveness of SelfCheckGPT's zero-resource, black-box approach in identifying factual and hallucinated information in large language model outputs.
+The experiments show that SelfCheckGPT is really good at detecting when a language model generates incorrect or made-up information (hallucinations). The best version of SelfCheckGPT, called the "Prompt" variant, performed much better than other methods that use GPT-3's own probabilities or more complex approaches.
+
+Even the other versions of SelfCheckGPT, like BERTScore, QA, and n-gram, did better than these other methods in most cases. Interestingly, a very simple version called "unigram (max)" that just looks for uncommon words in the generated text, worked surprisingly well across different setups. This suggests that if a word appears rarely in the generated samples, it's likely not factual.
+
+The version using Natural Language Inference (NLI) also performed really well, almost as good as the Prompt version. But since Prompt requires more computation, NLI could be the most practical choice, giving good performance without being too computationally expensive.
+
+Overall, the results show that SelfCheckGPT's approach of just using the language model's own generated samples, without needing any extra data or access to the model, is really effective for identifying factual versus made-up information.
+
 
 ## **Conclusion**
 SelfCheckGPT is a highly effective, zero-resource hallucination detection method for Large Language Models, suitable for various applications without requiring internal model data or external databases. However, its performance can vary based on the method used, with each method having its own strengths and weaknesses as outlined in the experiments.
