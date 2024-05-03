@@ -31,13 +31,149 @@ The goal is to create a system that:
 ## **Black-Box Approach: SELFCHECKGPT**
 The study "SELFCHECKGPT: Zero-Resource Black-Box Hallucination Detection for Generative Large Language Models" proposes a novel method called SelfCheckGPT, which analyzes the consistency between the generated response and multiple stochastically generated samples. The idea is that when an LLM knows a concept well, sampled responses will be consistent and factual. If a hallucination occurs, the samples will contain inconsistencies and contradictions.
 
+
 ### **Methodology**
 SelfCheckGPT uses several statistical approaches for checking consistency:
-1. **BERTScore:** Measures the similarity between sentences in the generated response and the sampled responses.
-2. **Question-Answering (QA):** Evaluates consistency by generating multiple-choice questions based on the generated response and assessing how many questions have consistent answers across samples.
-3. **n-gram:** Uses n-gram models trained on sampled responses to estimate the likelihood of each token in the generated response.
-4. **Natural Language Inference (NLI):** Determines whether sampled responses contradict the generated response using Natural Language Inference models.
-5. **Prompting:** Queries the LLM to assess whether a given sentence in the response is supported by the sampled responses through Yes/No questions.
+
+> **BERTScore**:
+> 
+> A metric designed to measure the similarity between sentences in a generated response and those found in sampled responses. It's particularly useful for evaluating the quality of generated text by comparing it to reference samples.
+> 
+> **How to Calculate BERTScore**
+> 1. **Calculate Pairwise Scores:**  
+>    For each sentence \( r_i \) in the generated response, compute the BERTScore between \( r_i \) and every sentence \( s_k^n \) in other sample responses \( n \).
+> 
+> 2. **Identify the Most Similar Sentence:**  
+>    Find the sentence in the sample responses that has the highest BERTScore with \( r_i \). This sentence is the most similar to the given sentence \( r_i \).
+> 
+> 3. **Average the Maximum Scores:**  
+>    For each sentence in the response, calculate the average of the maximum BERTScores obtained across all sentences. This average score is denoted as `SBERT(i)`.
+> 
+> ### **How to Interpret the Scores**
+> - **Low `SBERT(i)`**:  
+>   Indicates that the sentence likely contains factual information, as it appears in multiple drawn samples.
+> - **High `SBERT(i)`**:  
+>   Suggests that the sentence might be hallucinated or contain uncommon information, as it is found in fewer samples.
+> 
+> This way, we can gauge the similarity of each sentence in the generated response to the sampled responses, which helps identify how similar or distinct the generated sentences are.
+
+---
+
+> **Question-Answering (QA):**  
+>   Evaluates consistency by generating multiple-choice questions based on the generated response and assessing how many questions have consistent answers across samples.
+>
+> **Main Response:**  
+> "Albert Einstein was born in 1879 in Germany. He is known for his theory of relativity and won the Nobel Prize in Physics in 1921."
+> **Generated Questions:**
+> 1. **Q1:** When was Albert Einstein born?  
+>    Options: A) 1879, B) 1885, C) 1890, D) 1900  
+>    **Correct Answer:** A
+>
+> 2. **Q2:** Where was Albert Einstein born?  
+>    Options: A) Iran, B) US, C) Germany, D) Italy  
+>    **Correct Answer:** C
+>
+> 3. **Q3:** For what is Albert Einstein known?  
+>    Options: A) Theory of relativity, B) Quantum mechanics, C) Evolution theory, D) Thermodynamics  
+>    **Correct Answer:** A
+>    
+> **Independent Answering System:**
+> - Uses other sampled responses as context.
+> - Attempts to answer generated questions based on sample responses.
+> - Measures consistency by comparing the system's answers to the correct answers based on the main response.
+---
+
+> **n-gram:**  
+>   Uses n-gram models trained on sampled responses to estimate the likelihood of each token in the generated response.
+> 
+> **Main Response:**  
+> "The Eiffel Tower is located in Berlin and is made of chocolate."
+>
+> **Sampled Responses:**
+> - "The Eiffel Tower is in Paris and made of iron."
+> - "The Eiffel Tower is a famous landmark in France."
+> - "The Eiffel Tower was constructed in 1889."
+>
+> **Method:**
+> - Train an n-gram model on the sampled responses.
+> - Assess the main response sentence by sentence using the n-gram model.
+>
+> **Assessment:**
+> - "The Eiffel Tower is located in Berlin": Low probability, as the sampled responses indicate that the Eiffel Tower is in Paris.
+> - "and is made of chocolate": Low probability, as the sampled responses indicate that the Eiffel Tower is made of iron.
+>
+> **Conclusion:**
+> - High negative log probabilities suggest potential hallucinations.
+> - Sentences that contradict the sampled responses are flagged.
+---
+
+> **Natural Language Inference (NLI):**  
+> Determines whether sampled responses contradict the generated response using Natural Language Inference models.
+> 
+>  **Method:**
+> - Assess if a sentence from the Main Response contradicts information in sampled responses to detect hallucinations.
+> - Input: Concatenation of a sampled response (premise) and the assessed sentence of the Main Response (hypothesis).
+> - Contradiction Probability: Calculated using logits for 'entailment' and 'contradiction' classes.
+
+> **SelfCheckGPT with NLI Score:**
+> - Calculate the average of contradiction probabilities across all sampled passages.
+> - Higher score indicates a higher likelihood of hallucination.
+
+---
+
+> **Prompting:**  
+> Queries the LLM to assess whether a given sentence in the response is supported by the sampled responses through Yes/No questions.
+
+
+## **Demo Code for SelfCheckGPT Paper**
+
+To demonstrate SelfCheckGPT, here's a simplified overview of the process:
+
+```python
+import torch
+import spacy
+from datasets import load_dataset
+
+# Load dataset and Spacy model
+dataset = load_dataset("potsawee/wiki_bio_gpt3_hallucination")
+nlp = spacy.load("en_core_web_sm")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Example passage and responses
+passage = "The Eiffel Tower is a symbol of French culture and ingenuity. It stands tall in the heart of Chantilly. Also it constructed primarily from wrought iron."
+sample1 = "The Eiffel Tower, recognized globally, dominates the Parisian skyline, crafted from over 7,000 metric tons of iron."
+sample2 = "The Eiffel Tower, an iconic structure, stands as a testament to France's architectural advancement, erroneously believed to be solely designed by Gustave Eiffel."
+sample3 = "Inaugurated in 1889 for the World's Fair, the Eiffel Tower's creation marked a pivotal moment in engineering history, despite Gustave Eiffel's initial reservations."
+
+# Load SelfCheckGPT models and tokenize sentences
+from selfcheckgpt.modeling_selfcheck import SelfCheckMQAG, SelfCheckBERTScore, SelfCheckNgram, SelfCheckNLI, SelfCheckLLMPrompt
+
+selfcheck_mqag = SelfCheckMQAG(device=device)
+selfcheck_bertscore = SelfCheckBERTScore(rescale_with_baseline=True)
+selfcheck_ngram = SelfCheckNgram(n=1)
+selfcheck_nli = SelfCheckNLI(device=device)
+
+llm_model = "mistralai/Mistral-7B-Instruct-v0.2"
+selfcheck_prompt = SelfCheckLLMPrompt(llm_model, device)
+
+sentences = [sent.text.strip() for sent in nlp(passage).sents]
+samples = [sample1, sample2, sample3]
+
+# Use SelfCheckGPT models for evaluation
+mqag_scores = selfcheck_mqag.predict(sentences, passage, samples[:3], num_questions_per_sent=2)
+bertscore_scores = selfcheck_bertscore.predict(sentences, samples[:3])
+ngram_scores = selfcheck_ngram.predict(sentences, passage, samples[:3])
+nli_scores = selfcheck_nli.predict(sentences, samples[:3])
+prompt_scores = selfcheck_prompt.predict(sentences, samples[:3], verbose=True)
+
+# Print results
+print(mqag_scores)
+print(bertscore_scores)
+print(ngram_scores)
+print(nli_scores)
+print(prompt_scores)
+```
+
 
 ## **Experiments and Results**
 
