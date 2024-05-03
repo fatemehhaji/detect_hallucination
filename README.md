@@ -218,6 +218,14 @@ The WikiBio dataset was used, focusing on the longest rows to generate synthetic
 - **NLI:** Identifies contradictions in the text even without explicit facts.
 - **Prompt:** Assesses factuality effectively by directly querying an LLM, but results depend on the model's knowledge.
 
+## Results
+
+The table below summarizes the results of the 5 variants of scores used in the SelfCheckGPT method for hallucination detection.
+
+![Results](result.png)
+
+The results demonstrate the effectiveness of SelfCheckGPT in hallucination detection for large language models. SelfCheckGPT outperforms grey-box approaches, with the Prompt variant achieving the highest performance, considerably outperforming GPT-3's output probabilities and other grey-box and black-box methods. Even other SelfCheckGPT variants, such as BERTScore, QA, and n-gram, outperform the grey-box approaches in most setups. Notably, the computationally inexpensive SelfCheckGPT with unigram (max) works well across different setups, suggesting that if a token appears infrequently within the generated samples, it is likely non-factual. The NLI-based method also performs competitively, providing a good trade-off between performance and computation. Overall, the results demonstrate the effectiveness of SelfCheckGPT's zero-resource, black-box approach in identifying factual and hallucinated information in large language model outputs.
+
 ## **Conclusion**
 SelfCheckGPT is a highly effective, zero-resource hallucination detection method for Large Language Models, suitable for various applications without requiring internal model data or external databases. However, its performance can vary based on the method used, with each method having its own strengths and weaknesses as outlined in the experiments.
 
