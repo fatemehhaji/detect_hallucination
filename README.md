@@ -1,4 +1,4 @@
-# **SELFCHECKGPT: Zero-Resource Black-Box Hallucination Detection for Generative Large Language Models**
+# **SELFCHECKGPT: Zero-Resource Black-Box Hallucination Detection for Generative Large Language Models [1]**
 **Authors: Potsawee Manakul, Adian Liusie, Mark J. F. Gales (University of Cambridge)**
 
 ## **Introducing SelfCheckGPT: Catching Mistakes Made by AI Language Models**
@@ -245,5 +245,8 @@ SelfCheckGPT is a highly effective, zero-resource hallucination detection method
 
 
 ---
+## References
 
-*Code and dataset can be found on the [project page](https://github.com/potsawee/selfcheckgpt).*
+[1]: Manakul, P., Liusie, A., & Gales, M. J. (2023). Selfcheckgpt: Zero-resource black-box hallucination detection for generative large language models. *arXiv preprint arXiv:2303.08896*.
+
+[2]: *Code and dataset can be found on the [project page](https://github.com/potsawee/selfcheckgpt).*
