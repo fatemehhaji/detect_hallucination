@@ -34,9 +34,7 @@ The study "SELFCHECKGPT: Zero-Resource Black-Box Hallucination Detection for Gen
 
 ### **Methodology**
 SelfCheckGPT uses several statistical approaches for checking consistency:
-<p align="right">
-    <img src="framework.png" alt="Framework" width="400"/>
-</p>
+
 
 > # 1) BERTScore: A Simple Explanation
 > 
